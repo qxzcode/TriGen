@@ -17,9 +17,9 @@ Mesh::Mesh() {
 	Vertex& v3 = (vertices.emplace_front(vec3f(0,1,0)),vertices.front());
 	Vertex& v4 = (vertices.emplace_front(vec3f(0,0,0)),vertices.front());
 	triangles.emplace_front(Triangle(v1, v2, v3));
-	triangles.emplace_front(Triangle(v1, v2, v4));
-	triangles.emplace_front(Triangle(v2, v3, v4));
-	triangles.emplace_front(Triangle(v3, v1, v4));
+	triangles.emplace_front(Triangle(v4, v2, v1));
+	triangles.emplace_front(Triangle(v4, v3, v2));
+	triangles.emplace_front(Triangle(v4, v1, v3));
 }
 
 Mesh::~Mesh() {

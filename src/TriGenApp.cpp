@@ -27,7 +27,7 @@ class TriGenApp : public AppNative {
 void TriGenApp::setup() {
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	
 	cam.lookAt(Vec3f(0,3,3), Vec3f(0,0,0), Vec3f(0,1,0));
 	

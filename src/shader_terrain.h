@@ -31,7 +31,7 @@ varying vec3 vNormal;\
 void main() {\
 	vec4 col = gl_Color;\
 	float lightM = dot(uLightDir, normalize(vNormal));\
-	//lightM = (lightM+1.0)/2.0;\n\
+	lightM = (lightM+1.0)/2.0;\
 	if (lightM < 0.0) lightM = 0.0;\
 	float alpha = col.a;\
 	col = col * lightM;\
