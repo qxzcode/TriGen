@@ -12,8 +12,13 @@
 
 class Vertex {
 public:
-	Vertex(vec3f pos):pos(pos) {}
+	Vertex(vec3f pos):pos(pos),valence(0) {}
+	
+	// functions for manipulation and stuff
+	bool onUpdate(class Mesh* mesh);
+	static void edgeTris(Vertex* v1, Vertex* v2, class Triangle** t1, Triangle** t2);
 	
 	vec3f pos;
+	unsigned char valence;
 	
 };

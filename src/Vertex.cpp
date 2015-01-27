@@ -8,3 +8,6 @@
 
 #include "Vertex.h"
 
+void Vertex::edgeTris(Vertex* v1, Vertex* v2, class Triangle** t1, Triangle** t2) {
+	// TODO
+}

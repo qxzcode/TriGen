@@ -12,10 +12,10 @@
 
 Mesh::Mesh() {
 	// create a tetrahedron for testing
-	Vertex& v1 = (vertices.emplace_front(vec3f(0,0,1)),vertices.front());
-	Vertex& v2 = (vertices.emplace_front(vec3f(1,0,0)),vertices.front());
-	Vertex& v3 = (vertices.emplace_front(vec3f(0,1,0)),vertices.front());
-	Vertex& v4 = (vertices.emplace_front(vec3f(0,0,0)),vertices.front());
+	Vertex* v1 = (vertices.emplace_front(vec3f(0,0,1)),&vertices.front());
+	Vertex* v2 = (vertices.emplace_front(vec3f(1,0,0)),&vertices.front());
+	Vertex* v3 = (vertices.emplace_front(vec3f(0,1,0)),&vertices.front());
+	Vertex* v4 = (vertices.emplace_front(vec3f(0,0,0)),&vertices.front());
 	triangles.emplace_front(Triangle(v1, v2, v3));
 	triangles.emplace_front(Triangle(v4, v2, v1));
 	triangles.emplace_front(Triangle(v4, v3, v2));
@@ -39,27 +39,27 @@ void Mesh::updateGlMesh() {
 		buf[bufI++] = 0.0f;
 		buf[bufI++] = 1.0f;
 		buf[bufI++] = 0.0f;
-		buf[bufI++] = t.v1.pos.x;
-		buf[bufI++] = t.v1.pos.y;
-		buf[bufI++] = t.v1.pos.z;
+		buf[bufI++] = t.v1->pos.x;
+		buf[bufI++] = t.v1->pos.y;
+		buf[bufI++] = t.v1->pos.z;
 		buf[bufI++] = t.normal.x;
 		buf[bufI++] = t.normal.y;
 		buf[bufI++] = t.normal.z;
 		buf[bufI++] = 0.0f;
 		buf[bufI++] = 1.0f;
 		buf[bufI++] = 0.0f;
-		buf[bufI++] = t.v2.pos.x;
-		buf[bufI++] = t.v2.pos.y;
-		buf[bufI++] = t.v2.pos.z;
+		buf[bufI++] = t.v2->pos.x;
+		buf[bufI++] = t.v2->pos.y;
+		buf[bufI++] = t.v2->pos.z;
 		buf[bufI++] = t.normal.x;
 		buf[bufI++] = t.normal.y;
 		buf[bufI++] = t.normal.z;
 		buf[bufI++] = 0.0f;
 		buf[bufI++] = 1.0f;
 		buf[bufI++] = 0.0f;
-		buf[bufI++] = t.v3.pos.x;
-		buf[bufI++] = t.v3.pos.y;
-		buf[bufI++] = t.v3.pos.z;
+		buf[bufI++] = t.v3->pos.x;
+		buf[bufI++] = t.v3->pos.y;
+		buf[bufI++] = t.v3->pos.z;
 		numTriangles++;
 	}
 	
