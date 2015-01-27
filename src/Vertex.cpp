@@ -8,7 +8,7 @@
 
 #include "Vertex.h"
 
-Vertex::Vertex(vec3f pos):pos(pos),valence(0),aTris(new Triangle*[0]),aVerts(new Vertex*[0]) {
+Vertex::Vertex(vec3f pos):pos(pos),valence(0),aTris(NULL),aVerts(NULL) {
 	
 }
 
