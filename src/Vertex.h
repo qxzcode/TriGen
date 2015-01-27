@@ -12,7 +12,8 @@
 
 class Vertex {
 public:
-	Vertex(vec3f pos):pos(pos),valence(0) {}
+	Vertex(vec3f pos);
+	~Vertex();
 	
 	// functions for manipulation and stuff
 	bool onUpdate(class Mesh* mesh);
@@ -20,5 +21,7 @@ public:
 	
 	vec3f pos;
 	unsigned char valence;
+	Triangle* aTris = NULL;
+	Vertex* aVerts = NULL;
 	
 };
