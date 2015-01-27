@@ -8,6 +8,15 @@
 
 #include "Vertex.h"
 
+Vertex::Vertex(vec3f pos):pos(pos),valence(0),aTris(new Triangle*[0]),aVerts(new Vertex*[0]) {
+	
+}
+
+Vertex::~Vertex() {
+	delete[] aTris;
+	delete[] aVerts;
+}
+
 void Vertex::edgeTris(Vertex* v1, Vertex* v2, class Triangle** t1, Triangle** t2) {
 	// TODO
 }
