@@ -21,7 +21,7 @@ public:
 	
 	vec3f pos;
 	unsigned char valence;
-	Triangle* aTris = NULL;
-	Vertex* aVerts = NULL;
+	Triangle* aTris;
+	Vertex* aVerts;
 	
 };
