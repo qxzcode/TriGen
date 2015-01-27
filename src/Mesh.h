@@ -21,6 +21,9 @@ public:
 	void updateGlMesh();
 	void draw();
 	
+	// manipulation functions
+	void flipEdge(Vertex* v1, Vertex* v2);
+	
 protected:
 	// geometry in ram
 	std::forward_list<Triangle> triangles;
