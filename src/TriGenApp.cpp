@@ -19,6 +19,7 @@ class TriGenApp : public AppNative {
 	
 	Mesh mesh;
 	CameraPersp cam;
+	float lastFrame;
 	float rot = 0;
 	
 };
@@ -32,6 +33,8 @@ void TriGenApp::setup() {
 	
 	shaders::loadShaders();
 	mesh.updateGlMesh();
+	
+	lastFrame = getElapsedSeconds();
 }
 
 void TriGenApp::shutdown() {
@@ -43,7 +46,12 @@ void TriGenApp::resize() {
 }
 
 void TriGenApp::update() {
+	float curTime = getElapsedSeconds();
+	float dt = curTime - lastFrame;
+	lastFrame = curTime;
 	
+	rot += 90.0f*dt;
+	glUniform3f(shaders::terrain_lightDir, 0, 0.707, 0.707);
 }
 
 void TriGenApp::draw() {
@@ -51,8 +59,7 @@ void TriGenApp::draw() {
 	gl::clear(Color(1, 0.5, 0));
 	gl::setMatrices(cam);
 	shaders::terrain.useProgram();
-	glUniform3f(shaders::terrain_lightDir, 0, 0.707, 0.707);
-	glRotatef((rot+=1.0), 0, 1, 0);
+	glRotatef(rot, 0, 1, 0);
 	
 	// draw mesh
 	glEnableClientState(GL_VERTEX_ARRAY);
