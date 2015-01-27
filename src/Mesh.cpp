@@ -81,6 +81,16 @@ void Mesh::draw() {
 }
 
 
+// manipulation functions
+
+void Mesh::flipEdge(Vertex* v1, Vertex* v2) {
+	Vertex* v3 = /* todo */;
+	Vertex* v4 = /* todo */;
+	
+	// TODO
+}
+
+
 
 
 
