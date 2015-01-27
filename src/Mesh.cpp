@@ -11,10 +11,15 @@
 #include "shaders.h"
 
 Mesh::Mesh() {
+	// create a tetrahedron for testing
 	Vertex& v1 = (vertices.emplace_front(vec3f(0,0,1)),vertices.front());
 	Vertex& v2 = (vertices.emplace_front(vec3f(1,0,0)),vertices.front());
 	Vertex& v3 = (vertices.emplace_front(vec3f(0,1,0)),vertices.front());
+	Vertex& v4 = (vertices.emplace_front(vec3f(0,0,0)),vertices.front());
 	triangles.emplace_front(Triangle(v1, v2, v3));
+	triangles.emplace_front(Triangle(v1, v2, v4));
+	triangles.emplace_front(Triangle(v2, v3, v4));
+	triangles.emplace_front(Triangle(v3, v1, v4));
 }
 
 Mesh::~Mesh() {

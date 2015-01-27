@@ -19,10 +19,16 @@ class TriGenApp : public AppNative {
 	
 	Mesh mesh;
 	CameraPersp cam;
+	float rot = 0;
+	
 };
 
 void TriGenApp::setup() {
-	cam.lookAt(Vec3f(0,0,10), Vec3f(0,0,0), Vec3f(0,1,0));
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_CULL_FACE);
+	
+	cam.lookAt(Vec3f(0,3,3), Vec3f(0,0,0), Vec3f(0,1,0));
 	
 	shaders::loadShaders();
 	mesh.updateGlMesh();
@@ -46,8 +52,7 @@ void TriGenApp::draw() {
 	gl::setMatrices(cam);
 	shaders::terrain.useProgram();
 	glUniform3f(shaders::terrain_lightDir, 0, 0.707, 0.707);
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_CULL_FACE);
+	glRotatef((rot+=1.0), 0, 1, 0);
 	
 	// draw mesh
 	glEnableClientState(GL_VERTEX_ARRAY);
