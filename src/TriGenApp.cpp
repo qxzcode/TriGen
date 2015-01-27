@@ -49,7 +49,7 @@ void TriGenApp::draw() {
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);
 	
-	// draw mesh(es)
+	// draw mesh
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableVertexAttribArray(shaders::terrain_normal);
