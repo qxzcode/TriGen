@@ -18,8 +18,9 @@ public:
 	~Vertex();
 	
 	// functions for manipulation and stuff
-	void addTri(Triangle* t);
-	void removeTri(Triangle* t);
+	void addTri(Triangle* t) { addTri(t, t->getNextVert(this)); }
+	void addTri(Triangle* t, Vertex* v);
+	void removeTri(Triangle* t, Vertex* v);
 	bool onUpdate(class Mesh* mesh);
 	
 	vec3f pos;
