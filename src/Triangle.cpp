@@ -54,6 +54,10 @@ bool Triangle::hasVertex(Vertex* v) {
 	return v1==v || v2==v || v3==v;
 }
 
+bool Triangle::areOrdered(Vertex* vv1, Vertex* vv2) {
+	return getNextVert(vv1) == vv2;
+}
+
 void Triangle::updateNormal() {
 	normal = (v1->pos-v2->pos).cross(v1->pos-v3->pos).normalize();
 }
