@@ -93,8 +93,6 @@ void Mesh::flipEdge(Vertex* v1, Vertex* v2) {
 	Vertex* v4 = t2->getThirdVert(v1, v2);
 	
 	// assign the triangles new vertices and update their normals
-	t1->v1 = v1;
-	t2->v1 = v2;
 	if (t1->areOrdered(v1, v2)) {
 		t1->v2 = v4; t1->v3 = v3;
 		t2->v2 = v3; t2->v3 = v4;
@@ -102,6 +100,8 @@ void Mesh::flipEdge(Vertex* v1, Vertex* v2) {
 		t1->v2 = v3; t1->v3 = v4;
 		t2->v2 = v4; t2->v3 = v3;
 	}
+	t1->v1 = v1;
+	t2->v1 = v2;
 	t1->updateNormal();
 	t2->updateNormal();
 	
