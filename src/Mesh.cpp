@@ -20,6 +20,8 @@ Mesh::Mesh() {
 	triangles.emplace_front(Triangle(v4, v2, v1));
 	triangles.emplace_front(Triangle(v4, v3, v2));
 	triangles.emplace_front(Triangle(v4, v1, v3));
+	
+	flipEdge(v1, v2);
 }
 
 Mesh::~Mesh() {
@@ -90,7 +92,12 @@ void Mesh::flipEdge(Vertex* v1, Vertex* v2) {
 	Vertex* v3 = t1->getThirdVert(v1, v2);
 	Vertex* v4 = t2->getThirdVert(v1, v2);
 	
-	// 
+	// assign the triangles new vertices
+	*t1 = Triangle(v1, v3, v4);
+	*t2 = Triangle(v2, v3, v4);
+	
+	// update adjacency information
+	
 }
 
 // COULD USE SOME OPTIMIZATION

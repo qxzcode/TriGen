@@ -9,6 +9,9 @@
 #include "Triangle.h"
 
 Triangle::Triangle(Vertex *v1, Vertex *v2, Vertex *v3):v1(v1),v2(v2),v3(v3) {
+	v1->addTri(this);
+	v2->addTri(this);
+	v3->addTri(this);
 	updateNormal();
 }
 
