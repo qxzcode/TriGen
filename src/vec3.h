@@ -38,7 +38,9 @@ struct vec3f {
 		return x*x + y*y + z*z;
 	}
 	vec3f normalize() const {
-		return *this/len();
+		float len = len();
+		if (len == 0) return vec3f();
+		return *this/len;
 	}
 	float dot(const vec3f& v) const {
 		return x*v.x + y*v.y + z*v.z;
