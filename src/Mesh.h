@@ -12,6 +12,7 @@
 #include <forward_list>
 
 #include "Triangle.h"
+#include "Vertex.h"
 
 class Mesh {
 public:

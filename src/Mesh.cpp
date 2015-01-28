@@ -84,17 +84,29 @@ void Mesh::draw() {
 // manipulation functions
 
 void Mesh::flipEdge(Vertex* v1, Vertex* v2) {
-	Vertex* v3 = /* todo */;
-	Vertex* v4 = /* todo */;
+	// get the two other vertices & triangles involved
+	Triangle *t1, *t2;
+	getEdgeTris(v1, v2, &t1, &t2);
+	Vertex* v3 = t1->getThirdVert(v1, v2);
+	Vertex* v4 = t2->getThirdVert(v1, v2);
 	
-	// TODO
+	// 
 }
 
 // COULD USE SOME OPTIMIZATION
-void Mesh::getEdgeTris(Vertex* v1, Vertex* v2, class Triangle** t1, Triangle** t2) {
+void Mesh::getEdgeTris(Vertex* v1, Vertex* v2, Triangle** t1, Triangle** t2) {
 	*t1 = NULL;
-	
-	
+	for (int i = 0; i < v1->valence; i++) {
+		Triangle* t = v1->aTris[i];
+		if (t->hasVertex(v2)) {
+			if (!t1) {
+				*t1 = t;
+			} else {
+				*t2 = t;
+				return;
+			}
+		}
+	}
 }
 
 

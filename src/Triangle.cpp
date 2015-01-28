@@ -47,6 +47,10 @@ Vertex* Triangle::getPrevVert(Vertex* v) {
 		return v2;
 }
 
+bool Triangle::hasVertex(Vertex* v) {
+	return v1==v || v2==v || v3==v;
+}
+
 void Triangle::updateNormal() {
 	normal = (v1->pos-v2->pos).cross(v1->pos-v3->pos).normalize();
 }

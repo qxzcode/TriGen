@@ -19,6 +19,7 @@ public:
 	Vertex* getThirdVert(Vertex* v1, Vertex* v2); // given two vertices in this triangle, gets the third
 	Vertex* getNextVert(Vertex* v); // returns the next vertex, according to the winding order
 	Vertex* getPrevVert(Vertex* v); // returns the previous vertex, according to the winding order
+	bool hasVertex(Vertex* v);
 	
 	void updateNormal();
 	
