@@ -17,6 +17,8 @@ public:
 	// basic functions for mesh algorithms
 	void flip(); // reverses the triangle's vertex order, flipping its normal
 	Vertex* getThirdVert(Vertex* v1, Vertex* v2); // given two vertices in this triangle, gets the third
+	Vertex* getNextVert(Vertex* v); // returns the next vertex, according to the winding order
+	Vertex* getPrevVert(Vertex* v); // returns the previous vertex, according to the winding order
 	
 	void updateNormal();
 	

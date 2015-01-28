@@ -23,6 +23,7 @@ public:
 	
 	// manipulation functions
 	void flipEdge(Vertex* v1, Vertex* v2);
+	void getEdgeTris(Vertex* v1, Vertex* v2, Triangle** t1, Triangle** t2);
 	
 protected:
 	// geometry in ram

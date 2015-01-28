@@ -19,13 +19,21 @@ Vertex::~Vertex() {
 	delete[] aVerts;
 }
 
-//Writing add/remove vert/tri functions of Vertex
+// Writing add/remove vert/tri functions of Vertex
 
 void Vertex::addTri(Triangle* t) {
 	Triangle** oldTris = aTris;
-	aTris = new Triangle*[++valence];
+	Vertex** oldVerts = aVerts;
+	aTris = new Triangle*[valence+1];
+	aVerts = new Vertex*[valence+1];
+	for (int i = 0; i < valence; i++) {
+		aTris[i] = oldTris[i];
+		aVerts[i] = oldVerts[i];
+	}
+	aTris[valence] = t;
+	aVerts[valence] = t->getNextVert(this);
+	valence++;
+	delete[] oldTris;
+	delete[] oldVerts;
 }
 
-void Vertex::edgeTris(Vertex* v1, Vertex* v2, class Triangle** t1, Triangle** t2) {
-	// TODO
-}

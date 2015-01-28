@@ -90,6 +90,13 @@ void Mesh::flipEdge(Vertex* v1, Vertex* v2) {
 	// TODO
 }
 
+// COULD USE SOME OPTIMIZATION
+void Mesh::getEdgeTris(Vertex* v1, Vertex* v2, class Triangle** t1, Triangle** t2) {
+	*t1 = NULL;
+	
+	
+}
+
 
 
 

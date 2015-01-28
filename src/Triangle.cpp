@@ -3,7 +3,7 @@
 //  TriGen
 //
 //  Created by Quinn on 1/16/15.
-//
+//∫
 //
 
 #include "Triangle.h"
@@ -27,6 +27,24 @@ Vertex* Triangle::getThirdVert(Vertex* vv1, Vertex* vv2) {
 		return v2;
 	else
 		return v3;
+}
+
+Vertex* Triangle::getNextVert(Vertex* v) {
+	if (v == v1)
+		return v2;
+	else if (v == v2)
+		return v3;
+	else
+		return v1;
+}
+
+Vertex* Triangle::getPrevVert(Vertex* v) {
+	if (v == v1)
+		return v3;
+	else if (v == v2)
+		return v1;
+	else
+		return v2;
 }
 
 void Triangle::updateNormal() {
