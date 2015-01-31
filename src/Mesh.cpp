@@ -147,8 +147,9 @@ void Mesh::splitEdge(Vertex* v1, Vertex* v2) {
 	Vertex* v3 = t1->getThirdVert(v1, v2);
 	Vertex* v4 = t2->getThirdVert(v1, v2);
 	
-	// create the two new triangles
-	//...
+	// create the new vertex & two new triangles
+	Triangle* t3 = (triangles.emplace_front(/*...*/),&triangles.front());
+	Triangle* t4 = (triangles.emplace_front(/*...*/),&triangles.front());
 	
 	// update adjacency information
 	//...
