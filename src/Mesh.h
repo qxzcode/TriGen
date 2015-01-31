@@ -23,7 +23,10 @@ public:
 	void draw();
 	
 	// manipulation functions
+	bool updateVert(Vertex* v);
 	void flipEdge(Vertex* v1, Vertex* v2);
+	void splitEdge(Vertex* v1, Vertex* v2);
+	void collapseEdge(Vertex* v1, Vertex* v2);
 	void getEdgeTris(Vertex* v1, Vertex* v2, Triangle** t1, Triangle** t2);
 	
 protected:

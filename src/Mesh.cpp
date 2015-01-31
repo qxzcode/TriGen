@@ -9,6 +9,7 @@
 #include "Mesh.h"
 
 #include "shaders.h"
+#include "mesh_params.h"
 
 Mesh::Mesh() {
 	// create a tetrahedron for testing
@@ -21,7 +22,7 @@ Mesh::Mesh() {
 	triangles.emplace_front(v4, v3, v2);
 	triangles.emplace_front(v4, v1, v3);
 	
-	flipEdge(v2, v1);
+	updateVert(v1);
 }
 
 Mesh::~Mesh() {
@@ -85,6 +86,33 @@ void Mesh::draw() {
 
 // manipulation functions
 
+bool Mesh::updateVert(Vertex* v) {
+	// find longest edge
+	float len = MAXFLOAT;
+	Vertex* v2;
+	for (int i = 0; i < v->valence; i++) {
+		float l = (v->pos - v->aVerts[i]->pos).lenSq();
+		if (l > len) {
+			len = l;
+			v2 = v->aVerts[i];
+		}
+	}
+	
+	// check against thresholds
+	if (len > MAX_EDGE_LEN*MAX_EDGE_LEN) {
+		splitEdge(v, v2);
+		return true;
+	} else if (len < MIN_EDGE_LEN*MIN_EDGE_LEN) {
+		collapseEdge(v, v2);
+		return true;
+	} else {
+		return false;
+	}
+	
+	// TODO: valence regularization via flipEdge
+	// TODO: vertex relocation via ...?
+}
+
 void Mesh::flipEdge(Vertex* v1, Vertex* v2) {
 	// get the two other vertices & triangles involved
 	Triangle *t1, *t2;
@@ -110,6 +138,20 @@ void Mesh::flipEdge(Vertex* v1, Vertex* v2) {
 	v2->removeTri(t1, v1);
 	v3->addTri(t2, v4);
 	v4->addTri(t1, v3);
+}
+
+void Mesh::splitEdge(Vertex* v1, Vertex* v2) {
+	// get the two other vertices & triangles involved
+	Triangle *t1, *t2;
+	getEdgeTris(v1, v2, &t1, &t2);
+	Vertex* v3 = t1->getThirdVert(v1, v2);
+	Vertex* v4 = t2->getThirdVert(v1, v2);
+	
+	// create the two new triangles
+	//...
+	
+	// update adjacency information
+	//...
 }
 
 // COULD USE SOME OPTIMIZATION (MAYBE)
