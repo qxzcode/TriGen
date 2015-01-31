@@ -16,12 +16,12 @@ Mesh::Mesh() {
 	Vertex* v2 = (vertices.emplace_front(vec3f(1,0,0)),&vertices.front());
 	Vertex* v3 = (vertices.emplace_front(vec3f(0,1,0)),&vertices.front());
 	Vertex* v4 = (vertices.emplace_front(vec3f(0,0,0)),&vertices.front());
-	triangles.emplace_front(Triangle(v1, v2, v3));
-	triangles.emplace_front(Triangle(v4, v2, v1));
-	triangles.emplace_front(Triangle(v4, v3, v2));
-	triangles.emplace_front(Triangle(v4, v1, v3));
+	triangles.emplace_front(v1, v2, v3);
+	triangles.emplace_front(v4, v2, v1);
+	triangles.emplace_front(v4, v3, v2);
+	triangles.emplace_front(v4, v1, v3);
 	
-	flipEdge(v1, v2);
+	flipEdge(v2, v1);
 }
 
 Mesh::~Mesh() {
@@ -112,13 +112,13 @@ void Mesh::flipEdge(Vertex* v1, Vertex* v2) {
 	v4->addTri(t1, v3);
 }
 
-// COULD USE SOME OPTIMIZATION
+// COULD USE SOME OPTIMIZATION (MAYBE)
 void Mesh::getEdgeTris(Vertex* v1, Vertex* v2, Triangle** t1, Triangle** t2) {
-	*t1 = NULL;
+	*t1 = *t2 = NULL;
 	for (int i = 0; i < v1->valence; i++) {
 		Triangle* t = v1->aTris[i];
 		if (t->hasVertex(v2)) {
-			if (!t1) {
+			if (!*t1) {
 				*t1 = t;
 			} else {
 				*t2 = t;
@@ -126,6 +126,7 @@ void Mesh::getEdgeTris(Vertex* v1, Vertex* v2, Triangle** t1, Triangle** t2) {
 			}
 		}
 	}
+	printf("Couldn't find two edge triangles\n");
 }
 
 

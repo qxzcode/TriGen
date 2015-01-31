@@ -19,6 +19,10 @@ Vertex::~Vertex() {
 	delete[] aVerts;
 }
 
+void Vertex::addTri(Triangle* t) {
+	addTri(t, t->getNextVert(this));
+}
+
 void Vertex::addTri(Triangle* t, Vertex* v) {
 	Triangle** oldTris = aTris;
 	Vertex** oldVerts = aVerts;
