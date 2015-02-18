@@ -60,6 +60,7 @@ void TriGenApp::draw() {
 	gl::setMatrices(cam);
 	shaders::terrain.useProgram();
 	glRotatef(rot, 0, 1, 0);
+	glRotatef(rot/-10.0f, 1, 0, 0);
 	
 	// draw mesh
 	glEnableClientState(GL_VERTEX_ARRAY);

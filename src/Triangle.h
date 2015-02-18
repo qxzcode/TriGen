@@ -16,6 +16,7 @@ public:
 	
 	// basic functions for mesh algorithms
 	void flip(); // reverses the triangle's vertex order, flipping its normal
+	void replaceVert(Vertex* oldV, Vertex* newV); // replaces the given vertex in this triangle
 	Vertex* getThirdVert(Vertex* v1, Vertex* v2); // given two vertices in this triangle, gets the third
 	Vertex* getNextVert(Vertex* v); // returns the next vertex, according to the winding order
 	Vertex* getPrevVert(Vertex* v); // returns the previous vertex, according to the winding order
@@ -23,6 +24,8 @@ public:
 	bool areOrdered(Vertex* v1, Vertex* v2); // returns true if v2 comes after v1 in the winding order
 	
 	void updateNormal();
+	
+	std::string str();
 	
 	Vertex *v1, *v2, *v3;
 	vec3f normal;

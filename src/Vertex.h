@@ -21,6 +21,10 @@ public:
 	void addTri(Triangle* t);
 	void addTri(Triangle* t, Vertex* v);
 	void removeTri(Triangle* t, Vertex* v);
+	void replaceTri(Triangle* oldT, Triangle* newT);
+	void replaceVert(Vertex* oldV, Vertex* newV);
+	
+	std::string str();
 	
 	vec3f pos;
 	unsigned char valence;

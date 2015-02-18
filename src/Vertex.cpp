@@ -9,6 +9,7 @@
 #include "Vertex.h"
 
 #include "Triangle.h"
+#include <string>
 
 Vertex::Vertex(vec3f pos):pos(pos),valence(0),aTris(NULL),aVerts(NULL) {
 	
@@ -53,5 +54,27 @@ void Vertex::removeTri(Triangle* t, Vertex* v) {
 	valence--;
 	delete[] oldTris;
 	delete[] oldVerts;
+}
+
+void Vertex::replaceTri(Triangle* oldT, Triangle* newT) {
+	for (int i = 0; i < valence; i++) {
+		if (aTris[i] == oldT) {
+			aTris[i] = newT;
+			break;
+		}
+	}
+}
+
+void Vertex::replaceVert(Vertex* oldV, Vertex* newV) {
+	for (int i = 0; i < valence; i++) {
+		if (aVerts[i] == oldV) {
+			aVerts[i] = newV;
+			break;
+		}
+	}
+}
+
+std::string Vertex::str() {
+	return "("+std::to_string(pos.x)+","+std::to_string(pos.y)+","+std::to_string(pos.z)+")";
 }
 

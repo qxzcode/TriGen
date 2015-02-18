@@ -3,10 +3,12 @@
 //  TriGen
 //
 //  Created by Quinn on 1/16/15.
-//∫
+//
 //
 
 #include "Triangle.h"
+
+#include <string>
 
 Triangle::Triangle(Vertex *v1, Vertex *v2, Vertex *v3):v1(v1),v2(v2),v3(v3) {
 	v1->addTri(this);
@@ -21,6 +23,16 @@ void Triangle::flip() {
 	v1 = v3;
 	v3 = tmp;
 	normal = -normal;
+}
+
+void Triangle::replaceVert(Vertex* oldV, Vertex* newV) {
+	if (v1==oldV)
+		v1 = newV;
+	else if (v2==oldV)
+		v2 = newV;
+	else
+		v3 = newV;
+	updateNormal();
 }
 
 Vertex* Triangle::getThirdVert(Vertex* vv1, Vertex* vv2) {
@@ -61,3 +73,8 @@ bool Triangle::areOrdered(Vertex* vv1, Vertex* vv2) {
 void Triangle::updateNormal() {
 	normal = (v1->pos-v2->pos).cross(v1->pos-v3->pos).normalize();
 }
+
+std::string Triangle::str() {
+	return "["+v1->str()+", "+v2->str()+", "+v3->str()+"]";
+}
+

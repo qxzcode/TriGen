@@ -13,14 +13,14 @@
 
 Mesh::Mesh() {
 	// create a tetrahedron for testing
-	Vertex* v1 = (vertices.emplace_front(vec3f(0,0,1)),&vertices.front());
-	Vertex* v2 = (vertices.emplace_front(vec3f(1,0,0)),&vertices.front());
-	Vertex* v3 = (vertices.emplace_front(vec3f(0,1,0)),&vertices.front());
-	Vertex* v4 = (vertices.emplace_front(vec3f(0,0,0)),&vertices.front());
-	triangles.emplace_front(v1, v2, v3);
-	triangles.emplace_front(v4, v2, v1);
-	triangles.emplace_front(v4, v3, v2);
-	triangles.emplace_front(v4, v1, v3);
+	Vertex* v1 = addVert(vec3f(0,0,1));
+	Vertex* v2 = addVert(vec3f(1,0,0));
+	Vertex* v3 = addVert(vec3f(0,1,0));
+	Vertex* v4 = addVert(vec3f(0,0,0));
+	addTri(v1, v2, v3);
+	addTri(v4, v2, v1);
+	addTri(v4, v3, v2);
+	addTri(v4, v1, v3);
 	
 	updateVert(v1);
 }
@@ -88,7 +88,7 @@ void Mesh::draw() {
 
 bool Mesh::updateVert(Vertex* v) {
 	// find longest edge
-	float len = MAXFLOAT;
+	float len = -1;
 	Vertex* v2;
 	for (int i = 0; i < v->valence; i++) {
 		float l = (v->pos - v->aVerts[i]->pos).lenSq();
@@ -148,11 +148,30 @@ void Mesh::splitEdge(Vertex* v1, Vertex* v2) {
 	Vertex* v4 = t2->getThirdVert(v1, v2);
 	
 	// create the new vertex & two new triangles
-	Triangle* t3 = (triangles.emplace_front(/*...*/),&triangles.front());
-	Triangle* t4 = (triangles.emplace_front(/*...*/),&triangles.front());
+	Vertex* v5 = addVert((v1->pos+v2->pos+v3->pos+v4->pos)/4);
+	Triangle* t3;
+	Triangle* t4;
+	if (t1->areOrdered(v1, v2)) {
+		t3 = addTri(v2, v3, v5);
+		t4 = addTri(v2, v5, v4);
+	} else {
+		t3 = addTri(v2, v5, v3);
+		t4 = addTri(v2, v4, v5);
+	}
 	
 	// update adjacency information
-	//...
+	t1->replaceVert(v2, v5);
+	t2->replaceVert(v2, v5);
+	v1->replaceVert(v2, v5);
+	v2->replaceVert(v1, v5);
+	v2->replaceTri(t1, t3);
+	v2->replaceTri(t2, t4);
+	v3->addTri(t3, v5);
+	v4->addTri(t4, v5);
+}
+
+void Mesh::collapseEdge(Vertex* v1, Vertex* v2) {
+	
 }
 
 // COULD USE SOME OPTIMIZATION (MAYBE)
@@ -169,7 +188,17 @@ void Mesh::getEdgeTris(Vertex* v1, Vertex* v2, Triangle** t1, Triangle** t2) {
 			}
 		}
 	}
-	printf("Couldn't find two edge triangles\n");
+	printf("Couldn't find %s edge triangles\n", *t1? "two" : "any");
+}
+
+Vertex* Mesh::addVert(vec3f pos) {
+	vertices.emplace_front(pos);
+	return &vertices.front();
+}
+
+Triangle* Mesh::addTri(Vertex* v1, Vertex* v2, Vertex* v3) {
+	triangles.emplace_front(v1, v2, v3);
+	return &triangles.front();
 }
 
 

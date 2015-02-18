@@ -28,6 +28,8 @@ public:
 	void splitEdge(Vertex* v1, Vertex* v2);
 	void collapseEdge(Vertex* v1, Vertex* v2);
 	void getEdgeTris(Vertex* v1, Vertex* v2, Triangle** t1, Triangle** t2);
+	Vertex* addVert(vec3f pos);
+	Triangle* addTri(Vertex* v1, Vertex* v2, Vertex* v3);
 	
 protected:
 	// geometry in ram
