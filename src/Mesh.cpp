@@ -22,7 +22,12 @@ Mesh::Mesh() {
 	addTri(v4, v3, v2);
 	addTri(v4, v1, v3);
 	
-	updateVert(v1);
+	for (int n = 0; n < 200; n++) {
+		updateVert(v1);
+		updateVert(v2);
+		updateVert(v3);
+		updateVert(v4);
+	}
 }
 
 Mesh::~Mesh() {
@@ -87,11 +92,11 @@ void Mesh::draw() {
 // manipulation functions
 
 bool Mesh::updateVert(Vertex* v) {
-	// find longest edge
-	float len = -1;
-	Vertex* v2;
+	// loop through adjacent edges until no more updates are needed
+	
 	for (int i = 0; i < v->valence; i++) {
-		float l = (v->pos - v->aVerts[i]->pos).lenSq();
+		Vertex* v2 = v->aVerts[i];
+		float l = (v->pos - ->pos).lenSq();
 		if (l > len) {
 			len = l;
 			v2 = v->aVerts[i];
@@ -148,15 +153,15 @@ void Mesh::splitEdge(Vertex* v1, Vertex* v2) {
 	Vertex* v4 = t2->getThirdVert(v1, v2);
 	
 	// create the new vertex & two new triangles
-	Vertex* v5 = addVert((v1->pos+v2->pos+v3->pos+v4->pos)/4);
+	Vertex* v5 = addVert((v1->pos+v2->pos)/2 + (t1->normal+t2->normal).normalize()*0.3f);
 	Triangle* t3;
 	Triangle* t4;
 	if (t1->areOrdered(v1, v2)) {
-		t3 = addTri(v2, v3, v5);
-		t4 = addTri(v2, v5, v4);
+		t3 = addTri(v2, v3, v5, false);
+		t4 = addTri(v2, v5, v4, false);
 	} else {
-		t3 = addTri(v2, v5, v3);
-		t4 = addTri(v2, v4, v5);
+		t3 = addTri(v2, v5, v3, false);
+		t4 = addTri(v2, v4, v5, false);
 	}
 	
 	// update adjacency information
@@ -168,6 +173,10 @@ void Mesh::splitEdge(Vertex* v1, Vertex* v2) {
 	v2->replaceTri(t2, t4);
 	v3->addTri(t3, v5);
 	v4->addTri(t4, v5);
+	v5->addTri(t1, v1);
+	v5->addTri(t2, v2);
+	v5->addTri(t3, v3);
+	v5->addTri(t4, v4);
 }
 
 void Mesh::collapseEdge(Vertex* v1, Vertex* v2) {
@@ -196,8 +205,8 @@ Vertex* Mesh::addVert(vec3f pos) {
 	return &vertices.front();
 }
 
-Triangle* Mesh::addTri(Vertex* v1, Vertex* v2, Vertex* v3) {
-	triangles.emplace_front(v1, v2, v3);
+Triangle* Mesh::addTri(Vertex* v1, Vertex* v2, Vertex* v3, bool adjUpdate) {
+	triangles.emplace_front(v1, v2, v3, adjUpdate);
 	return &triangles.front();
 }
 

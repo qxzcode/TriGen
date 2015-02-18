@@ -12,7 +12,7 @@
 
 class Triangle {
 public:
-	Triangle(Vertex *v1, Vertex *v2, Vertex *v3);
+	Triangle(Vertex *v1, Vertex *v2, Vertex *v3, bool adjUpdate = true);
 	
 	// basic functions for mesh algorithms
 	void flip(); // reverses the triangle's vertex order, flipping its normal
