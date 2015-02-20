@@ -14,6 +14,14 @@
 #include "Triangle.h"
 #include "Vertex.h"
 
+struct edgeData {
+	edgeData(Vertex* v1, Vertex* v2);
+	
+	Vertex *v1, *v2, *v3, *v4;
+	Triangle *t1, *t2;
+	float lenSq;
+};
+
 class Mesh {
 public:
 	Mesh();
@@ -23,11 +31,10 @@ public:
 	void draw();
 	
 	// manipulation functions
-	bool updateVert(Vertex* v);
-	void flipEdge(Vertex* v1, Vertex* v2);
-	void splitEdge(Vertex* v1, Vertex* v2);
-	void collapseEdge(Vertex* v1, Vertex* v2);
-	void getEdgeTris(Vertex* v1, Vertex* v2, Triangle** t1, Triangle** t2);
+	void updateVert(Vertex* v);
+	void flipEdge(edgeData edge);
+	void splitEdge(edgeData edge);
+	void collapseEdge(edgeData edge);
 	Vertex* addVert(vec3f pos);
 	Triangle* addTri(Vertex* v1, Vertex* v2, Vertex* v3, bool adjUpdate = true);
 	

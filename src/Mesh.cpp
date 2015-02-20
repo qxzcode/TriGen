@@ -22,11 +22,11 @@ Mesh::Mesh() {
 	addTri(v4, v3, v2);
 	addTri(v4, v1, v3);
 	
-	for (int n = 0; n < 200; n++) {
+	for (int n = 0; n < 10; n++) {
+//		for (Vertex &v : vertices) {
+//			updateVert(&v);
+//		}
 		updateVert(v1);
-		updateVert(v2);
-		updateVert(v3);
-		updateVert(v4);
 	}
 }
 
@@ -91,39 +91,56 @@ void Mesh::draw() {
 
 // manipulation functions
 
-bool Mesh::updateVert(Vertex* v) {
-	// loop through adjacent edges until no more updates are needed
-	
-	for (int i = 0; i < v->valence; i++) {
-		Vertex* v2 = v->aVerts[i];
-		float l = (v->pos - ->pos).lenSq();
-		if (l > len) {
-			len = l;
-			v2 = v->aVerts[i];
+edgeData::edgeData(Vertex* v1, Vertex* v2):v1(v1),v2(v2) {
+	// COULD USE SOME OPTIMIZATION (MAYBE)
+	t1 = t2 = NULL;
+	for (int i = 0; i < v1->valence; i++) {
+		Triangle* t = v1->aTris[i];
+		if (t->hasVertex(v2)) {
+			if (!t1) {
+				t1 = t;
+			} else {
+				t2 = t;
+				break;
+			}
 		}
 	}
-	
-	// check against thresholds
-	if (len > MAX_EDGE_LEN*MAX_EDGE_LEN) {
-		splitEdge(v, v2);
-		return true;
-	} else if (len < MIN_EDGE_LEN*MIN_EDGE_LEN) {
-		collapseEdge(v, v2);
-		return true;
-	} else {
-		return false;
-	}
-	
-	// TODO: valence regularization via flipEdge
-	// TODO: vertex relocation via ...?
+	if (!t2) printf("Couldn't find %s edge triangles\n", t1? "two" : "any");
+	v3 = t1->getThirdVert(v1, v2);
+	v4 = t2->getThirdVert(v1, v2);
+	lenSq = (v1->pos - v2->pos).lenSq();
 }
 
-void Mesh::flipEdge(Vertex* v1, Vertex* v2) {
+void Mesh::updateVert(Vertex* v) {
+	// loop through adjacent edges until no more updates are needed
+	bool done;
+	do {
+		done = true;
+		for (int i = 0; i < v->valence; i++) {
+			Vertex* v2 = v->aVerts[i];
+			edgeData edge(v, v2);
+			
+			// check against thresholds
+			if (edge.lenSq > MAX_EDGE_LEN_SQ) { // split if longer than upper threshold
+				splitEdge(edge);
+				done = false; break;
+			} else if (edge.lenSq < MIN_EDGE_LEN_SQ) { // collapse if shorter than lower threshold
+				collapseEdge(edge);
+				done = false; break;
+			}
+			
+			// TODO: valence regularization via flipEdge
+			// TODO: vertex relocation via ...?
+		}
+	} while (!done);
+	
+	
+}
+
+void Mesh::flipEdge(edgeData edge) {
 	// get the two other vertices & triangles involved
-	Triangle *t1, *t2;
-	getEdgeTris(v1, v2, &t1, &t2);
-	Vertex* v3 = t1->getThirdVert(v1, v2);
-	Vertex* v4 = t2->getThirdVert(v1, v2);
+	Triangle *t1 = edge.t1, *t2 = edge.t2;
+	Vertex *v1 = edge.v1, *v2 = edge.v2, *v3 = edge.v3, *v4 = edge.v4;
 	
 	// assign the triangles new vertices and update their normals
 	if (t1->areOrdered(v1, v2)) {
@@ -145,12 +162,10 @@ void Mesh::flipEdge(Vertex* v1, Vertex* v2) {
 	v4->addTri(t1, v3);
 }
 
-void Mesh::splitEdge(Vertex* v1, Vertex* v2) {
+void Mesh::splitEdge(edgeData edge) {
 	// get the two other vertices & triangles involved
-	Triangle *t1, *t2;
-	getEdgeTris(v1, v2, &t1, &t2);
-	Vertex* v3 = t1->getThirdVert(v1, v2);
-	Vertex* v4 = t2->getThirdVert(v1, v2);
+	Triangle *t1 = edge.t1, *t2 = edge.t2;
+	Vertex *v1 = edge.v1, *v2 = edge.v2, *v3 = edge.v3, *v4 = edge.v4;
 	
 	// create the new vertex & two new triangles
 	Vertex* v5 = addVert((v1->pos+v2->pos)/2 + (t1->normal+t2->normal).normalize()*0.3f);
@@ -179,25 +194,12 @@ void Mesh::splitEdge(Vertex* v1, Vertex* v2) {
 	v5->addTri(t4, v4);
 }
 
-void Mesh::collapseEdge(Vertex* v1, Vertex* v2) {
+void Mesh::collapseEdge(edgeData edge) {
+	// get the two other vertices & triangles involved
+	Triangle *t1 = edge.t1, *t2 = edge.t2;
+	Vertex *v1 = edge.v1, *v2 = edge.v2, *v3 = edge.v3, *v4 = edge.v4;
 	
-}
-
-// COULD USE SOME OPTIMIZATION (MAYBE)
-void Mesh::getEdgeTris(Vertex* v1, Vertex* v2, Triangle** t1, Triangle** t2) {
-	*t1 = *t2 = NULL;
-	for (int i = 0; i < v1->valence; i++) {
-		Triangle* t = v1->aTris[i];
-		if (t->hasVertex(v2)) {
-			if (!*t1) {
-				*t1 = t;
-			} else {
-				*t2 = t;
-				return;
-			}
-		}
-	}
-	printf("Couldn't find %s edge triangles\n", *t1? "two" : "any");
+	//...
 }
 
 Vertex* Mesh::addVert(vec3f pos) {
