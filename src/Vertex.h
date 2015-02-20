@@ -24,10 +24,20 @@ public:
 	void replaceTri(Triangle* oldT, Triangle* newT);
 	void replaceVert(Vertex* oldV, Vertex* newV);
 	
+	// misc
+	int valExcess(int off=0) {
+		int v = valence+off - 6;
+		return v*v;
+	}
 	std::string str();
 	
 	vec3f pos;
-	unsigned char valence;
+#ifdef DEBUG
+	unsigned short // makes values easier to read in the debugger
+#else
+	unsigned char  // saves a bit of memory
+#endif
+	valence;
 	Triangle** aTris;
 	Vertex** aVerts;
 	

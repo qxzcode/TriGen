@@ -8,7 +8,7 @@
 
 #pragma once
 
-#define TARGET_EDGE_LEN 0.5f
+#define TARGET_EDGE_LEN 0.7f
 #define MIN_EDGE_LEN (TARGET_EDGE_LEN * 4.0f/5.0f)
 #define MAX_EDGE_LEN (TARGET_EDGE_LEN * 4.0f/3.0f)
 

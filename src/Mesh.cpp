@@ -23,10 +23,12 @@ Mesh::Mesh() {
 	addTri(v4, v1, v3);
 	
 	for (int n = 0; n < 10; n++) {
-//		for (Vertex &v : vertices) {
-//			updateVert(&v);
-//		}
-		updateVert(v1);
+		printf("\n\nIteration #%i\n", n+1);
+		for (Vertex &v : vertices) {
+			printf("\nProcessing vert (val=%i)...\n", v.valence);
+			updateVert(&v);
+		}
+//		updateVert(v1);
 	}
 }
 
@@ -37,7 +39,7 @@ Mesh::~Mesh() {
 
 void Mesh::updateGlMesh() {
 	// generate mesh data
-	GLfloat buf[512*6];
+	GLfloat buf[1024*6*3];
 	int bufI = 0;
 	numTriangles = 0;
 	for (Triangle& t : triangles) {
@@ -69,7 +71,7 @@ void Mesh::updateGlMesh() {
 		buf[bufI++] = t.v3->pos.y;
 		buf[bufI++] = t.v3->pos.z;
 		numTriangles++;
-	}
+	}printf("%i", numTriangles);
 	
 	// allocate buffer if needed
 	if (!meshBuf)
@@ -114,27 +116,38 @@ edgeData::edgeData(Vertex* v1, Vertex* v2):v1(v1),v2(v2) {
 void Mesh::updateVert(Vertex* v) {
 	// loop through adjacent edges until no more updates are needed
 	bool done;
+	int count = 0;
 	do {
 		done = true;
 		for (int i = 0; i < v->valence; i++) {
 			Vertex* v2 = v->aVerts[i];
 			edgeData edge(v, v2);
 			
-			// check against thresholds
+			// check against length thresholds
 			if (edge.lenSq > MAX_EDGE_LEN_SQ) { // split if longer than upper threshold
+				printf("Splitting edge\n");
 				splitEdge(edge);
 				done = false; break;
-			} else if (edge.lenSq < MIN_EDGE_LEN_SQ) { // collapse if shorter than lower threshold
+			}
+			if (edge.lenSq < MIN_EDGE_LEN_SQ) { // collapse if shorter than lower threshold
+				printf("Collapsing edge\n");
 				collapseEdge(edge);
 				done = false; break;
 			}
 			
-			// TODO: valence regularization via flipEdge
+			// regularize valences (minimize deviation from 6)
+			int v_before = edge.v1->valExcess()+edge.v2->valExcess()+edge.v3->valExcess()+edge.v4->valExcess();
+			int v_after = edge.v1->valExcess(-1)+edge.v2->valExcess(-1)+edge.v3->valExcess(+1)+edge.v4->valExcess(+1);
+			if (v_after < v_before) {
+				printf("Flipping edge\n");
+				flipEdge(edge);
+				done = false; break;
+			}
+			
 			// TODO: vertex relocation via ...?
 		}
-	} while (!done);
-	
-	
+	} while (++count<10 && !done);
+	if (!done) printf("VERTEX DIDN'T FINISH UPDATING\n");
 }
 
 void Mesh::flipEdge(edgeData edge) {
