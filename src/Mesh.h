@@ -31,7 +31,7 @@ public:
 	void draw();
 	
 	// manipulation functions
-	void updateVert(Vertex* v);
+	bool updateVert(Vertex* v);
 	void flipEdge(edgeData edge);
 	void splitEdge(edgeData edge);
 	void collapseEdge(edgeData edge);

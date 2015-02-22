@@ -22,13 +22,14 @@ Mesh::Mesh() {
 	addTri(v4, v3, v2);
 	addTri(v4, v1, v3);
 	
-	for (int n = 0; n < 10; n++) {
-		printf("\n\nIteration #%i\n", n+1);
+	for (int n = 0; n < 7; n++) {
+		printf("\nIteration #%i\n", n+1);
+		bool updated = false;
 		for (Vertex &v : vertices) {
-			printf("\nProcessing vert (val=%i)...\n", v.valence);
-			updateVert(&v);
+			updated = updated || updateVert(&v);
 		}
-//		updateVert(v1);
+		printf(updated?"\nUpdated mesh\n":"\nDone updating mesh!\n");
+		if (!updated) break;
 	}
 }
 
@@ -113,41 +114,36 @@ edgeData::edgeData(Vertex* v1, Vertex* v2):v1(v1),v2(v2) {
 	lenSq = (v1->pos - v2->pos).lenSq();
 }
 
-void Mesh::updateVert(Vertex* v) {
-	// loop through adjacent edges until no more updates are needed
-	bool done;
-	int count = 0;
-	do {
-		done = true;
-		for (int i = 0; i < v->valence; i++) {
-			Vertex* v2 = v->aVerts[i];
-			edgeData edge(v, v2);
-			
-			// check against length thresholds
-			if (edge.lenSq > MAX_EDGE_LEN_SQ) { // split if longer than upper threshold
-				printf("Splitting edge\n");
-				splitEdge(edge);
-				done = false; break;
-			}
-			if (edge.lenSq < MIN_EDGE_LEN_SQ) { // collapse if shorter than lower threshold
-				printf("Collapsing edge\n");
-				collapseEdge(edge);
-				done = false; break;
-			}
-			
-			// regularize valences (minimize deviation from 6)
-			int v_before = edge.v1->valExcess()+edge.v2->valExcess()+edge.v3->valExcess()+edge.v4->valExcess();
-			int v_after = edge.v1->valExcess(-1)+edge.v2->valExcess(-1)+edge.v3->valExcess(+1)+edge.v4->valExcess(+1);
-			if (v_after < v_before) {
-				printf("Flipping edge\n");
-				flipEdge(edge);
-				done = false; break;
-			}
-			
-			// TODO: vertex relocation via ...?
+bool Mesh::updateVert(Vertex* v) {
+	// do one update operation, or return false if none are needed
+	for (int i = 0; i < v->valence; i++) {
+		Vertex* v2 = v->aVerts[i];
+		edgeData edge(v, v2);
+		
+		// check against length thresholds
+		if (edge.lenSq > MAX_EDGE_LEN_SQ) { // split if longer than upper threshold
+			printf("Splitting edge\n");
+			splitEdge(edge);
+			return true;
 		}
-	} while (++count<10 && !done);
-	if (!done) printf("VERTEX DIDN'T FINISH UPDATING\n");
+//		if (edge.lenSq < MIN_EDGE_LEN_SQ) { // collapse if shorter than lower threshold
+//			printf("Collapsing edge\n");
+//			collapseEdge(edge);
+//			return true;
+//		}
+		
+		// regularize valences (minimize deviation from 6)
+		int v_before = edge.v1->valExcess()+edge.v2->valExcess()+edge.v3->valExcess()+edge.v4->valExcess();
+		int v_after = edge.v1->valExcess(-1)+edge.v2->valExcess(-1)+edge.v3->valExcess(+1)+edge.v4->valExcess(+1);
+		if (v_after < v_before) {
+			printf("Flipping edge\n");
+			flipEdge(edge);
+			return true;
+		}
+		
+		// TODO: vertex relocation via ...?
+	}
+	return false;
 }
 
 void Mesh::flipEdge(edgeData edge) {
@@ -213,11 +209,24 @@ void Mesh::collapseEdge(edgeData edge) {
 	Vertex *v1 = edge.v1, *v2 = edge.v2, *v3 = edge.v3, *v4 = edge.v4;
 	
 	// update adjacency information
-	for (int i = 0; i < v2->valence; i++) {
-		Vertex* v = v2->aVerts[i];
-		if (v!=v1 && v!=v3 && v!=v4) {
+	int vi = 0, ti = 0;
+	for (int n = 0; true; n++) {
+		Triangle* t; bool inRange;
+		do {t = v2->aTris[ti++];} while (t!=t1 && t!=t2 && (inRange=ti<v2->valence));
+		if (!inRange) break;
+		t->replaceVert(v2, v1);
+		if (n == 0) {
+			v1->replaceTri(t1, t);
+		} else {
+			Vertex* v;
+			do {v = v2->aVerts[vi++];} while (v!=v1 && v!=v3 && v!=v4);
 			v->replaceVert(v2, v1);
-			v1->addTri(<#Triangle *t#>, v);
+			if (n == 1) {
+				v1->replaceTri(t2, t);
+				v1->replaceVert(v2, v);
+			} else {
+				v1->addTri(t, v);
+			}
 		}
 	}
 	v3->removeTri(t1, v2);
@@ -229,9 +238,9 @@ void Mesh::collapseEdge(edgeData edge) {
 		v1->aTris[i]->updateNormal();
 	
 	// remove & deallocate the vertex & two triangles
-	removeVert(v2);
-	removeTri(t1);
-	removeTri(t2);
+//	removeVert(v2);
+//	removeTri(t1);
+//	removeTri(t2);
 }
 
 Vertex* Mesh::addVert(vec3f pos) {
