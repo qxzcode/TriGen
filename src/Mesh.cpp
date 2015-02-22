@@ -13,20 +13,20 @@
 
 Mesh::Mesh() {
 	// create a tetrahedron for testing
-	Vertex* v1 = addVert(vec3f(0,0,1));
-	Vertex* v2 = addVert(vec3f(1,0,0));
-	Vertex* v3 = addVert(vec3f(0,1,0));
-	Vertex* v4 = addVert(vec3f(0,0,0));
+	Vertex* v1 = addVert(vec3f(0.5,0.5,0.5));
+	Vertex* v2 = addVert(vec3f(0.5,-0.5,-0.5));
+	Vertex* v3 = addVert(vec3f(-0.5,0.5,-0.5));
+	Vertex* v4 = addVert(vec3f(-0.5,-0.5,0.5));
 	addTri(v1, v2, v3);
 	addTri(v4, v2, v1);
 	addTri(v4, v3, v2);
 	addTri(v4, v1, v3);
 	
-	for (int n = 0; n < 7; n++) {
+	for (int n = 0; n < 100; n++) {
 		printf("\nIteration #%i\n", n+1);
 		bool updated = false;
-		for (Vertex &v : vertices) {
-			updated = updated || updateVert(&v);
+		for (auto it = vertices.begin(); it != vertices.end(); it++) {
+			updated = updateVert(&*it) || updated;
 		}
 		printf(updated?"\nUpdated mesh\n":"\nDone updating mesh!\n");
 		if (!updated) break;
