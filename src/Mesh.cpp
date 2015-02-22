@@ -212,17 +212,58 @@ void Mesh::collapseEdge(edgeData edge) {
 	Triangle *t1 = edge.t1, *t2 = edge.t2;
 	Vertex *v1 = edge.v1, *v2 = edge.v2, *v3 = edge.v3, *v4 = edge.v4;
 	
-	//...
+	// update adjacency information
+	for (int i = 0; i < v2->valence; i++) {
+		Vertex* v = v2->aVerts[i];
+		if (v!=v1 && v!=v3 && v!=v4) {
+			v->replaceVert(v2, v1);
+			v1->addTri(<#Triangle *t#>, v);
+		}
+	}
+	v3->removeTri(t1, v2);
+	v4->removeTri(t2, v2);
+	
+	// move v1 to the midpoint of the collapsed edge, and update normals
+	v1->pos = (v1->pos+v2->pos)/2;
+	for (int i = 0; i < v1->valence; i++)
+		v1->aTris[i]->updateNormal();
+	
+	// remove & deallocate the vertex & two triangles
+	removeVert(v2);
+	removeTri(t1);
+	removeTri(t2);
 }
 
 Vertex* Mesh::addVert(vec3f pos) {
+	Vertex* oldFront = vertices.empty()? NULL : &vertices.front();
 	vertices.emplace_front(pos);
+	vertices.front().setItBefore(new vertIt(vertices.before_begin()));
+	if (oldFront) oldFront->setItBefore(new vertIt(vertices.begin()));
 	return &vertices.front();
 }
 
+void Mesh::removeVert(Vertex* v) {
+	vertIt itBefore = *(vertIt*)v->itBefore;
+	vertices.erase_after(itBefore); // also deallocates v (and v->itBefore)
+	vertIt itNext = itBefore;
+	if (++itNext != vertices.end())
+		itNext->setItBefore(new vertIt(itBefore));
+}
+
 Triangle* Mesh::addTri(Vertex* v1, Vertex* v2, Vertex* v3, bool adjUpdate) {
+	Triangle* oldFront = triangles.empty()? NULL : &triangles.front();
 	triangles.emplace_front(v1, v2, v3, adjUpdate);
+	triangles.front().setItBefore(new triIt(triangles.before_begin()));
+	if (oldFront) oldFront->setItBefore(new triIt(triangles.begin()));
 	return &triangles.front();
+}
+
+void Mesh::removeTri(Triangle* t) {
+	triIt itBefore = *(triIt*)t->itBefore;
+	triangles.erase_after(itBefore); // also deallocates t (and t->itBefore)
+	triIt itNext = itBefore;
+	if (++itNext != triangles.end())
+		itNext->setItBefore(new triIt(itBefore));
 }
 
 

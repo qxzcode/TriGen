@@ -13,6 +13,7 @@
 class Triangle {
 public:
 	Triangle(Vertex *v1, Vertex *v2, Vertex *v3, bool adjUpdate = true);
+	~Triangle();
 	
 	// basic functions for mesh algorithms
 	void flip(); // reverses the triangle's vertex order, flipping its normal
@@ -25,8 +26,12 @@ public:
 	
 	void updateNormal();
 	
+	void setItBefore(void* it);
 	std::string str();
 	
 	Vertex *v1, *v2, *v3;
 	vec3f normal;
+	void* itBefore;
 };
+
+typedef std::forward_list<Triangle>::iterator triIt;

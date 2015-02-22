@@ -9,6 +9,7 @@
 #pragma once
 
 #include "vec3.h"
+#include <forward_list>
 
 class Triangle;
 
@@ -29,6 +30,7 @@ public:
 		int v = valence+off - 6;
 		return v*v;
 	}
+	void setItBefore(void* it);
 	std::string str();
 	
 	vec3f pos;
@@ -40,5 +42,7 @@ public:
 	valence;
 	Triangle** aTris;
 	Vertex** aVerts;
-	
+	void* itBefore;
 };
+
+typedef std::forward_list<Vertex>::iterator vertIt;

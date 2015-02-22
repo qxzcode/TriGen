@@ -36,7 +36,9 @@ public:
 	void splitEdge(edgeData edge);
 	void collapseEdge(edgeData edge);
 	Vertex* addVert(vec3f pos);
+	void removeVert(Vertex* v);
 	Triangle* addTri(Vertex* v1, Vertex* v2, Vertex* v3, bool adjUpdate = true);
+	void removeTri(Triangle* t);
 	
 protected:
 	// geometry in ram

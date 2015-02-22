@@ -10,13 +10,22 @@
 
 #include <string>
 
-Triangle::Triangle(Vertex *v1, Vertex *v2, Vertex *v3, bool adjUpdate):v1(v1),v2(v2),v3(v3) {
+Triangle::Triangle(Vertex *v1, Vertex *v2, Vertex *v3, bool adjUpdate):v1(v1),v2(v2),v3(v3),itBefore(NULL) {
 	if (adjUpdate) {
 		v1->addTri(this);
 		v2->addTri(this);
 		v3->addTri(this);
 	}
 	updateNormal();
+}
+
+Triangle::~Triangle() {
+	setItBefore(NULL);
+}
+
+void Triangle::setItBefore(void* it) {
+	delete (triIt*)itBefore;
+	itBefore = it;
 }
 
 void Triangle::flip() {

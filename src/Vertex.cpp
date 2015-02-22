@@ -11,13 +11,19 @@
 #include "Triangle.h"
 #include <string>
 
-Vertex::Vertex(vec3f pos):pos(pos),valence(0),aTris(NULL),aVerts(NULL) {
+Vertex::Vertex(vec3f pos):pos(pos),valence(0),aTris(NULL),aVerts(NULL),itBefore(NULL) {
 	
 }
 
 Vertex::~Vertex() {
 	delete[] aTris;
 	delete[] aVerts;
+	setItBefore(NULL);
+}
+
+void Vertex::setItBefore(void* it) {
+	delete (vertIt*)itBefore;
+	itBefore = it;
 }
 
 void Vertex::addTri(Triangle* t) {
