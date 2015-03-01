@@ -13,6 +13,7 @@
 
 #include "Triangle.h"
 #include "Vertex.h"
+#include "mesh_params.h"
 
 struct edgeData {
 	edgeData(Vertex* v1, Vertex* v2);
@@ -28,10 +29,10 @@ public:
 	~Mesh();
 	
 	void updateGlMesh();
-	void draw();
+	void draw() const;
 	
 	// manipulation functions
-	bool updateVert(Vertex* v);
+	bool updateVert(Vertex* v, mesh_params mp);
 	void flipEdge(edgeData edge);
 	void splitEdge(edgeData edge);
 	void collapseEdge(edgeData edge);

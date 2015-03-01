@@ -9,7 +9,6 @@
 #include "Mesh.h"
 
 #include "shaders.h"
-#include "mesh_params.h"
 
 Mesh::Mesh() {
 	// create a tetrahedron for testing
@@ -22,14 +21,20 @@ Mesh::Mesh() {
 	addTri(v4, v3, v2);
 	addTri(v4, v1, v3);
 	
-	for (int n = 0; n < 100; n++) {
-		printf("\nIteration #%i\n", n+1);
-		bool updated = false;
-		for (auto it = vertices.begin(); it != vertices.end(); it++) {
-			updated = updateVert(&*it) || updated;
+	for (mesh_params mp(2.0f); mp.targetLen >= 0.05f; mp.setTargetLen(mp.targetLen*0.90f)) {
+		for (int n = 0; n < 100; n++) {
+#ifdef DEBUG
+			printf("\nIteration #%i\n", n+1);
+#endif
+			bool updated = false;
+			for (auto it = vertices.begin(); it != vertices.end(); it++) {
+				updated = updateVert(&*it, mp) || updated;
+			}
+#ifdef DEBUG
+			printf(updated?"\nUpdated mesh\n":"\nDone updating mesh!\n");
+#endif
+			if (!updated) break;
 		}
-		printf(updated?"\nUpdated mesh\n":"\nDone updating mesh!\n");
-		if (!updated) break;
 	}
 }
 
@@ -40,7 +45,7 @@ Mesh::~Mesh() {
 
 void Mesh::updateGlMesh() {
 	// generate mesh data
-	GLfloat buf[1024*6*3];
+	GLfloat buf[100000*6*3];
 	int bufI = 0;
 	numTriangles = 0;
 	for (Triangle& t : triangles) {
@@ -83,7 +88,7 @@ void Mesh::updateGlMesh() {
 	glBufferData(GL_ARRAY_BUFFER, bufI*sizeof(GLfloat), buf, GL_STATIC_READ);
 }
 
-void Mesh::draw() {
+void Mesh::draw() const {
 	glBindBuffer(GL_ARRAY_BUFFER, meshBuf);
 	glVertexAttribPointer(shaders::terrain_normal, 3, GL_FLOAT, GL_FALSE, 9*sizeof(GL_FLOAT), (void*)0);
 	glColorPointer(3, GL_FLOAT, 9*sizeof(GL_FLOAT), (void*)(3*sizeof(GL_FLOAT)));
@@ -114,32 +119,34 @@ edgeData::edgeData(Vertex* v1, Vertex* v2):v1(v1),v2(v2) {
 	lenSq = (v1->pos - v2->pos).lenSq();
 }
 
-bool Mesh::updateVert(Vertex* v) {
+bool Mesh::updateVert(Vertex* v, mesh_params mp) {
 	// do one update operation, or return false if none are needed
 	for (int i = 0; i < v->valence; i++) {
 		Vertex* v2 = v->aVerts[i];
 		edgeData edge(v, v2);
 		
 		// check against length thresholds
-		if (edge.lenSq > MAX_EDGE_LEN_SQ) { // split if longer than upper threshold
+		if (edge.lenSq > mp.maxLenSq) { // split if longer than upper threshold
+#ifdef DEBUG
 			printf("Splitting edge\n");
+#endif
 			splitEdge(edge);
 			return true;
 		}
-//		if (edge.lenSq < MIN_EDGE_LEN_SQ) { // collapse if shorter than lower threshold
+//		if (edge.lenSq < mp.minLenSq) { // collapse if shorter than lower threshold
 //			printf("Collapsing edge\n");
 //			collapseEdge(edge);
 //			return true;
 //		}
 		
 		// regularize valences (minimize deviation from 6)
-		int v_before = edge.v1->valExcess()+edge.v2->valExcess()+edge.v3->valExcess()+edge.v4->valExcess();
-		int v_after = edge.v1->valExcess(-1)+edge.v2->valExcess(-1)+edge.v3->valExcess(+1)+edge.v4->valExcess(+1);
-		if (v_after < v_before) {
-			printf("Flipping edge\n");
-			flipEdge(edge);
-			return true;
-		}
+//		int v_before = edge.v1->valExcess()+edge.v2->valExcess()+edge.v3->valExcess()+edge.v4->valExcess();
+//		int v_after = edge.v1->valExcess(-1)+edge.v2->valExcess(-1)+edge.v3->valExcess(+1)+edge.v4->valExcess(+1);
+//		if (v_after < v_before) {
+//			printf("Flipping edge\n");
+//			flipEdge(edge);
+//			return true;
+//		}
 		
 		// TODO: vertex relocation via ...?
 	}
@@ -177,7 +184,7 @@ void Mesh::splitEdge(edgeData edge) {
 	Vertex *v1 = edge.v1, *v2 = edge.v2, *v3 = edge.v3, *v4 = edge.v4;
 	
 	// create the new vertex & two new triangles
-	Vertex* v5 = addVert((v1->pos+v2->pos)/2 + (t1->normal+t2->normal).normalize()*0.3f);
+	Vertex* v5 = addVert((v1->pos+v2->pos)/2 + (t1->normal+t2->normal).normalize() * sqrtf(edge.lenSq)*0.3f);
 	Triangle* t3;
 	Triangle* t4;
 	if (t1->areOrdered(v1, v2)) {
