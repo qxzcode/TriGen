@@ -54,7 +54,7 @@ void TriGenApp::update() {
 	lastFrame = curTime;
 	
 	rot += 90.0f*dt;
-	glUniform3f(shaders::terrain_lightDir, 0, 0.707, 0.707);
+	glUniform3f(shaders::terrain_lightDir, 0.0f, 0.707f, 0.707f);
 }
 
 void TriGenApp::draw() {
@@ -64,6 +64,8 @@ void TriGenApp::draw() {
 	shaders::terrain.useProgram();
 	glRotatef(rot, 0, 1, 0);
 	glRotatef(rot/-10.0f, 1, 0, 0);
+//	float rotr = rot*M_PI/180.0f;
+//	glUniform3f(shaders::terrain_lightDir, cosf(rotr)*0.707f, sinf(rotr), cosf(rotr)*0.707f);
 	
 	// draw mesh
 	glEnableClientState(GL_VERTEX_ARRAY);

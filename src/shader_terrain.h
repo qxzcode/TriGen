@@ -18,8 +18,7 @@ void main() {\
 	vec4 col = gl_Color;\
 	float lightM = dot(uLightDir, normalize(aNormal));\
 	lightM = (lightM+1.0)/2.0;\
-	if (lightM < 0.0) lightM = 0.0;\
-	col = vec4(vec3(col)*lightM, col.a);\
+	col = vec4(vec3(col)*clamp(lightM, 0.1, 1.0), col.a);\
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\
 	gl_FrontColor = col;\
 }\
